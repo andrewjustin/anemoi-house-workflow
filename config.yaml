@@ -1,0 +1,67 @@
+defaults:
+- data: zarr
+- dataloader: native_grid
+- datamodule: single
+- diagnostics: evaluation
+- hardware: example
+- graph: encoder_decoder_only
+- model: transformer
+- training: default
+- _self_
+
+
+config_validation: True
+
+dataloader:
+  #  dataset:
+  #    - dataset: ${hardware.paths.data}/training.zarr
+  #    - dataset: ${hardware.paths.data}/validation.zarr
+  #    - dataset: ${hardware.paths.data}/testing.zarr
+  batch_size:
+    # note that the batch_size is set locally, so
+    # global_batch_size = num_nodes * num_gpus_per_node * batch_size / num_gpus_per_model
+    training: 1
+    validation: 1
+    test: 1
+  training:
+    dataset: ${hardware.paths.data}/training.zarr
+    start: 1994
+    end: 1994
+    frequency: ${data.frequency}
+    drop: []
+  validation:
+    dataset: ${hardware.paths.data}/validation.zarr
+    start: 1994
+    end: 1994
+    frequency: ${data.frequency}
+    drop: []
+  test:
+    dataset: ${hardware.paths.data}/testing.zarr
+    start: 1994
+    end: 1994
+    frequency: ${data.frequency}
+    drop: []
+
+diagnostics:
+  plot:
+    frequency:
+      batch: 5_000
+      epoch: 1
+
+hardware:
+  num_gpus_per_model: 1
+  paths:
+    output: p1/training-output/
+    data: p1/dataset
+    graph: p1/graph
+  files:
+    dataset: training.zarr
+
+model:
+  # turn these down for a hello world setup
+  num_channels: 128
+  processor:
+    num_layers: 8
+
+training:
+  max_steps: 1_000
